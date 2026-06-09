@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Project Link</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- SIDEBAR BISA LU COPAS DARI YANG LAMA -->
+        <aside class="sidebar">
+            <div class="brand"><div class="logo-icon">N</div> NPD</div>
+            <div class="menu-section">MENU UTAMA</div>
+            <a href="index.html" class="nav-link"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+            <div class="menu-section">ADMINISTRASI</div>
+            <a href="direktori.html" class="nav-link active"><i class="bi bi-hdd-network"></i> Link Directory</a>
+            <a href="partners.html" class="nav-link"><i class="bi bi-buildings"></i> Partner ISP</a>
+        </aside>
+
+        <div class="main-content">
+            <div class="mb-4">
+                <!-- Tombol back dinamis dibikin lewat JS -->
+                <a href="#" id="btnBackToDetail" class="action-link d-inline-block mb-3" style="font-size: 14px;">
+                    <i class="bi bi-arrow-left me-1"></i> Kembali ke Detail
+                </a>
+                <h2 class="page-title m-0">Update Project Lifecycle</h2>
+                <p class="text-muted mt-1">Perbarui status project (Upgrade, Downgrade, Terminate, dll).</p>
+            </div>
+
+            <div class="card p-4 p-md-5 mb-5">
+                <form id="formUpdateProject" novalidate>
+                    
+                    <!-- INFORMASI LINK (READ ONLY) -->
+                    <h6 class="text-white fw-bold mb-4" style="letter-spacing: 1px;"><i class="bi bi-info-circle text-warning me-2"></i>INFO LINK (TARGET)</h6>
+                    <div class="row mb-4 p-3 rounded" style="background-color: rgba(255, 255, 255, 0.02); border: 1px dashed #333;">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold text-muted">CUSTOMER & LOKASI</label>
+                            <div id="readCustomerName" class="fw-bold text-white fs-5">Memuat...</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold text-muted">SERVICE ID & PARTNER</label>
+                            <div id="readServiceId" class="fw-bold text-white fs-5">Memuat...</div>
+                        </div>
+                    </div>
+
+                    <hr class="border-dark mb-4">
+
+                    <!-- FORM UPDATE BARU -->
+                    <h6 class="text-white fw-bold mb-4" style="letter-spacing: 1px;"><i class="bi bi-tools text-primary me-2"></i>DETAIL UPDATE BARU</h6>
+                    <div class="row mb-5">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold">JENIS PROJECT / UPDATE</label>
+                            <select class="form-select" id="inpUpdProject" required onchange="cekStatusTerminate()">
+                                <option value="">-- Pilih Jenis Update --</option>
+                                <option value="Upgrade">📈 Upgrade Kapasitas</option>
+                                <option value="Downgrade">📉 Downgrade Kapasitas</option>
+                                <option value="Relokasi">🚚 Relokasi Site</option>
+                                <option value="Perpanjangan">📝 Perpanjangan Kontrak</option>
+                                <option value="Terminate">🛑 Terminate (Pemutusan)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold">TANGGAL UPDATE BERLAKU</label>
+                            <input type="date" class="form-control" id="inpUpdTanggal" required>
+                        </div>
+                        
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label small fw-bold">DETAIL WORK ORDER (WO) BARU</label>
+                            <textarea class="form-control" id="inpUpdWO" rows="2" placeholder="Contoh: Upgrade kapasitas dari 100 Mbps menjadi 200 Mbps..." required></textarea>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold">BIAYA BULANAN BARU (MRC)</label>
+                            <input type="number" class="form-control" id="inpUpdBiaya" placeholder="Masukkan biaya baru jika berubah">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold">STATUS LINK</label>
+                            <select class="form-select" id="inpUpdStatus" required>
+                                <option value="Online">🟢 Online</option>
+                                <option value="Terminated">🔴 Terminated</option>
+                                <option value="Isolir">🟡 Isolir</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4 pt-3 border-top border-dark">
+                        <button type="submit" class="btn btn-warning px-5 py-2 fw-bold text-dark" style="font-size: 15px;">
+                            Simpan Update
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

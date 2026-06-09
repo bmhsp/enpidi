@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Direktori</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo-icon">N</div>
+                NPD
+            </div>
+
+            <div class="menu-section">MENU UTAMA</div>
+            <a href="index.html" class="nav-link"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+            
+            <div class="menu-section">OPERASIONAL</div>
+            <a href="provisioning.html" class="nav-link"><i class="bi bi-tools"></i> Provisioning</a>
+            
+            <div class="menu-section">ADMINISTRASI</div>
+            <a href="direktori.html" class="nav-link active"><i class="bi bi-hdd-network"></i> Link Directory</a>
+            <a href="partners.html" class="nav-link"><i class="bi bi-buildings"></i> Partner ISP</a>
+            <a href="survey.html" class="nav-link"><i class="bi bi-people"></i> Survey</a>
+        </aside>
+
+        <div class="main-content">
+            
+            <div class="mb-4">
+                <a href="direktori.html" class="action-link d-inline-block mb-3" style="font-size: 14px;">
+                    <i class="bi bi-arrow-left me-1"></i> Kembali ke List Directory
+                </a>
+                <h2 class="page-title m-0">New Directory</h2>
+                <p class="text-muted mt-1">Formulir untuk mendaftarkan link baru ke dalam direktori link.</p>
+            </div>
+
+            <div class="card p-4 p-md-5 mb-5">
+                <form id="formAddSite" onsubmit="simpanDirektoriBaru(event)" novalidate>
+                    
+                    <h6 class="text-white fw-bold mb-4" style="letter-spacing: 1px;"><i class="bi bi-building text-primary me-2"></i>INFO PERUSAHAAN & LOKASI</h6>
+                    <div class="row mb-5">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold">NAMA PERUSAHAAN (PELANGGAN)</label>
+                            <div class="d-flex gap-2 align-items-start">
+                                <div class="flex-grow-1" style="min-width: 0;">
+                                    <select class="form-select select2-custom" id="inpDirCustomer" required>
+                                        <option value="">-- Memuat data pelanggan... --</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold">CUSTOMER SITE / LOKASI</label>
+                            <input type="text" class="form-control" id="inpDirSite" required placeholder="Contoh: Cabang Sudirman">
+                        </div>
+                    </div>
+
+                    <hr class="border-dark mb-4">
+
+                    <h6 class="text-white fw-bold mb-4" style="letter-spacing: 1px;"><i class="bi bi-hdd-network text-primary me-2"></i>DETAIL TEKNIS JARINGAN</h6>
+                    <div class="row mb-5">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold">SERVICE ID (INTERNAL)</label>
+                            <input type="text" class="form-control" id="inpDirServiceId" required placeholder="Contoh: SRV-10293">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold">CIRCUIT ID (PARTNER)</label>
+                            <input type="text" class="form-control" id="inpDirCircuitId" placeholder="Opsional, bisa dikosongkan">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold">PARTNER ISP</label>
+                            <select class="form-select select2-custom" id="inpDirPartner" required>
+                                <option value="">-- Pilih Partner ISP --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold">KAPASITAS SERVICE</label>
+                            <input type="text" class="form-control" id="inpDirServiceDetail" required placeholder="Contoh: Dedicated 100 Mbps">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold">SERVICE CATEGORY</label>
+                            <select class="form-select" id="inputServiceCategory" required>
+                                <option value="Metro">Metro</option>
+                                <option value="Dedicated">Dedicated</option>
+                                <option value="Broadband">Broadband</option>
+                                <option value="Wireless">Wireless</option>
+                                <option value="VPN IP">VPN IP</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold">TIPE PROJECT</label>
+                            <select class="form-select shadow-none bg-light" id="inpDirProject" required>
+                                <option value="Activation">Activation</option>
+                                <option value="Upgrade">Upgrade</option>
+                                <option value="Downgrade">Downgrade</option>
+                                <option value="Relocation">Relocation</option>
+                                <option value="Terminate">Terminate</option>
+                                <option value="BOD">BOD</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <hr class="border-dark mb-4">
+
+                    <h6 class="text-white fw-bold mb-4" style="letter-spacing: 1px;"><i class="bi bi-wallet2 text-primary me-2"></i>BIAYA & ADMINISTRASI</h6>
+                    <div class="row mb-5">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold">SALES ORDER (SO)</label>
+                            <input type="text" class="form-control" id="inpDirSalesOrder" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold">SALES</label>
+                            <input type="text" class="form-control" id="inpDirSales" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold">TANGGAL AKTIVASI / KONTRAK MULAI</label>
+                            <input type="date" class="form-control" id="inpDirTanggal" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold">PERIODE KONTRAK (Tahun)</label>
+                            <input type="number" class="form-control" id="inpDirContractPeriode" value="1">
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label small fw-bold text-danger">BIAYA BULANAN (Rp)</label>
+                            <input type="number" class="form-control" id="inpDirMonthlyCost" value="0">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label small fw-bold text-danger">BIAYA INSTALASI (Rp)</label>
+                            <input type="number" class="form-control" id="inpDirInstCost" value="0">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label small fw-bold text-danger">BIAYA IKG (Rp)</label>
+                            <input type="number" class="form-control" id="inpDirIkgCost" value="0">
+                        </div>
+                    </div>
+
+                    <hr class="border-dark mb-4">
+
+                    <h6 class="text-white fw-bold mb-4" style="letter-spacing: 1px;"><i class="bi bi-card-text text-primary me-2"></i>CATATAN & STATUS AWAL</h6>
+                    <div class="row mb-4">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label small fw-bold">DETAIL WORK ORDER (WO)</label>
+                            <textarea class="form-control" id="inpDirDetailWO" rows="2" placeholder="Masukkan detail WO lengkap..." required></textarea>
+                        </div>
+                        <div class="col-md-8 mb-3">
+                            <label class="form-label small fw-bold">NOTES TAMBAHAN</label>
+                            <textarea class="form-control" id="inpDirNotes" rows="2" placeholder="Catatan opsional..."></textarea>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label small fw-bold">STATUS AWAL LINK</label>
+                            <select class="form-select" id="inpDirStatusLink" required>
+                                <option value="Online" selected>🟢 Online</option>
+                                <option value="Terminated">🔴 Terminated</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4 pt-3">
+                        <button type="submit" class="btn btn-ui-primary px-5 py-2 fw-bold" style="font-size: 15px;">
+                            Submit
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalAddCustomer" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Tambah Pelanggan Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="formAddCustomer">
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold">NAMA PERUSAHAAN (PT / CV)</label>
+                            <input type="text" class="form-control" id="newCustomerName" required placeholder="Contoh: PT Telekomunikasi Indonesia">
+                        </div>
+                        <button type="submit" class="btn btn-ui-primary w-100 fw-bold py-2">Simpan Pelanggan</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

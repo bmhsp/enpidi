@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Order</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
+</head>
+<body class="d-flex">
+
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo-icon">N</div>
+            NPD
+        </div>
+
+        <div class="menu-section">MENU UTAMA</div>
+        <a href="index.html" class="nav-link"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+        
+        
+        <div class="menu-section">OPERASIONAL</div>
+        <a href="provisioning.html" class="nav-link active"><i class="bi bi-tools"></i> Provisioning</a>
+        
+        <div class="menu-section">ADMINISTRASI</div>
+        <a href="direktori.html" class="nav-link"><i class="bi bi-hdd-network"></i> Link Directory</a>
+        <a href="partners.html" class="nav-link"><i class="bi bi-buildings"></i> Partner ISP</a>
+        <a href="customers.html" class="nav-link"><i class="bi bi-people"></i> Survey</a>
+    </aside>
+    
+    <div class="container-fluid px-4 pb-5 mt-4">
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-light rounded-circle shadow-sm me-3" onclick="window.location.href='provisioning.html'">
+                        <i class="bi bi-arrow-left"></i>
+                    </button>
+                    <div>
+                        <h4 class="mb-0 fw-bolder text-dark">New Order</h4>
+                        <div class="text-muted small mt-1 fw-semibold">Tambahkan task provisioning ke dalam antrean.</div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary rounded-pill px-5 py-2 fw-bold shadow-sm d-flex align-items-center" onclick="simpanOrderBaru()">
+                    <i class="bi bi-save-fill me-2"></i> Submit Order
+                </button>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-lg-5">
+                <form id="formNewOrder">
+                    <div class="row g-5">
+                        <div class="col-lg-6">
+                            <h6 class="fw-bold text-dark border-bottom pb-2 mb-4"><i class="bi bi-buildings me-2 text-primary"></i>Info Entitas & Lokasi</h6>
+                            
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold text-muted">NAMA CUSTOMER</label>
+                                <select class="form-select select2-custom" id="inpProvCustomer" required>
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold text-muted">LOKASI SITE (CABANG)</label>
+                                <input type="text" class="form-control shadow-none bg-light" id="inpProvSite" placeholder="Misal: Cabang Sudirman" required>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label small fw-bold text-muted">PARTNER ISP</label>
+                                <select class="form-select select2-custom" id="inpProvPartner" required>
+                                    <option value=""></option>
+                                </select>
+                            </div>
+
+                            <h6 class="fw-bold text-dark border-bottom pb-2 mb-4 mt-5"><i class="bi bi-hdd-network me-2 text-primary"></i>Info Teknis Link</h6>
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label class="form-label small fw-bold text-muted">SERVICE ID</label>
+                                    <input type="text" class="form-control shadow-none bg-light" id="inpProvServiceId" required>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="form-label small fw-bold text-muted">CIRCUIT ID</label>
+                                    <input type="text" class="form-control shadow-none bg-light" id="inpProvCircuitId">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label class="form-label small fw-bold text-muted">TIPE PROJECT</label>
+                                    <select class="form-select shadow-none bg-light" id="inpProvProject" required>
+                                        <option value="Activation">Activation</option>
+                                        <option value="Upgrade">Upgrade</option>
+                                        <option value="Downgrade">Downgrade</option>
+                                        <option value="Relocation">Relocation</option>
+                                        <option value="Terminate">Terminate</option>
+                                        <option value="BOD">BOD</option>
+                                    </select>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="form-label small fw-bold text-muted">KATEGORI LAYANAN</label>
+                                    <select class="form-select shadow-none bg-light" id="inpProvCategory" required>
+                                        <option value="Metro">Metro</option>
+                                        <option value="Dedicated">Dedicated</option>
+                                        <option value="Broadband">Broadband</option>
+                                        <option value="Wireless">Wireless</option>
+                                        <option value="VPN IP">VPN IP</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold text-muted">LAYANAN & KAPASITAS</label>
+                                <input type="text" class="form-control shadow-none bg-light" id="inpProvService" placeholder="Misal: Metro E 10 Mbps" required>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <h6 class="fw-bold text-dark border-bottom pb-2 mb-4"><i class="bi bi-wallet2 me-2 text-primary"></i>Komersil & Detail Tambahan</h6>
+                            
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label class="form-label small fw-bold text-muted">NAMA SALES</label>
+                                    <input type="text" class="form-control shadow-none bg-light" id="inpProvSales">
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="form-label small fw-bold text-muted">SALES ORDER (SO)</label>
+                                    <input type="text" class="form-control shadow-none bg-light" id="inpProvSO">
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label small fw-bold text-muted">BIAYA BULANAN (Rp)</label>
+                                    <input type="number" class="form-control shadow-none bg-light" id="inpProvMonthly" value="0">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label small fw-bold text-muted">BIAYA INSTALASI (Rp)</label>
+                                    <input type="number" class="form-control shadow-none bg-light" id="inpProvInstall" value="0">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label small fw-bold text-muted">BIAYA IKG (Rp)</label>
+                                    <input type="number" class="form-control shadow-none bg-light" id="inpProvIkg" value="0">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label small fw-bold text-muted">KONTRAK (Tahun)</label>
+                                    <input type="number" class="form-control shadow-none bg-light" id="inpProvContract" value="1">
+                                </div>
+                            </div>
+                            <div class="mb-3 mt-3">
+                                <label class="form-label small fw-bold text-muted">TANGGAL EKSEKUSI & MULAI KONTRAK</label>
+                                <input type="date" class="form-control shadow-none bg-light" id="inpProvStartDate">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold text-muted">DETAIL WORK ORDER (WO)</label>
+                                <textarea class="form-control shadow-none bg-light" id="inpProvWO" rows="2" placeholder="Detail Pekerjaan . . ."></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold text-muted">CATATAN (NOTES)</label>
+                                <textarea class="form-control shadow-none bg-light" id="inpProvNotes" rows="2" placeholder="Catatan opsional..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    
+        <script src="script.js"></script>
+        <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+</body>
+</html>

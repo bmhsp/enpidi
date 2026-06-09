@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partner Detail</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo-icon">N</div>
+                NPD
+            </div>
+
+            <div class="menu-section">MENU UTAMA</div>
+            <a href="index.html" class="nav-link"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+            
+            
+            <div class="menu-section">OPERASIONAL</div>
+            <a href="provisioning.html" class="nav-link"><i class="bi bi-tools"></i> Provisioning</a>
+            
+            <div class="menu-section">ADMINISTRASI</div>
+            <a href="direktori.html" class="nav-link"><i class="bi bi-hdd-network"></i> Link Directory</a>
+            <a href="partners.html" class="nav-link active"><i class="bi bi-buildings"></i> Partner ISP</a>
+            <a href="customers.html" class="nav-link"><i class="bi bi-people"></i> Survey</a>
+        </aside>
+        
+        <div class="main-content">
+            <a href="partners.html" class="back-link"><i class="bi bi-arrow-left me-2"></i> Kembali ke List Partner</a>
+
+            <div class="profile-header">
+                <div class="profile-info-wrap">
+                    <div class="profile-avatar" id="pdAvatar">NA</div>
+                    <div>
+                        <div class="profile-title" id="pdName">Memuat...</div>
+                        <div class="profile-subtitle">
+                            <span class="badge-id"><i class="bi bi-building"></i> Partner ISP</span>
+                            <span id="pdEmail"><i class="bi bi-envelope"></i> -</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="custom-tabs">
+                <div class="tab-item active" id="tabOverview" onclick="switchTab('overview')">Basic Detail</div>
+                <div class="tab-item" id="tabCircuits" onclick="switchTab('circuits')">Connected Customers</div>
+            </div>
+
+            <div id="contentOverview">
+                <div class="detail-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="card-title m-0">Informasi Partner</h5>
+                        <button id="btnMulaiEdit" class="btn btn-sm btn-outline-primary fw-bold" onclick="mulaiEditPartner()">
+                            <i class="bi bi-pencil-square"></i> Edit Profil
+                        </button>
+                    </div>
+                    
+                    <div id="modeBacaPartner">
+                        
+                        <div class="row g-4 mb-2">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <div class="text-muted small fw-bold mb-1"><i class="bi bi-building me-1"></i> NAMA PARTNER</div>
+                                    <div class="text-dark fw-bold fs-6" id="cardName">-</div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="text-muted small fw-bold mb-1"><i class="bi bi-envelope me-1"></i> EMAIL</div>
+                                    <div class="text-primary fw-bold" id="cardEmail">-</div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="text-muted small fw-bold mb-1"><i class="bi bi-telephone me-1"></i> NO. TELEPON</div>
+                                    <div class="text-dark fw-semibold" id="infoPhone">-</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <div class="text-muted small fw-bold mb-1"><i class="bi bi-person-badge me-1"></i> ACCOUNT MANAGER</div>
+                                    <div class="text-dark fw-semibold" id="infoAM">-</div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="text-muted small fw-bold mb-1"><i class="bi bi-geo-alt me-1"></i> ALAMAT KANTOR</div>
+                                    <div class="text-dark fw-semibold" id="infoAddress" style="line-height: 1.6;">-</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="border-primary border-opacity-25 my-4">
+
+                        <h6 class="fw-bold text-dark mb-3"><i class="bi bi-graph-up-arrow me-2 text-primary"></i>Statistik Layanan</h6>
+                        <div class="row g-3">
+                            
+                            <div class="col-md-4">
+                                <div class="p-3 rounded border border-light-subtle h-100 shadow-sm">
+                                    <div class="text-muted small fw-bold mb-1">TOTAL SITE</div>
+                                    <div class="fs-5 fw-bold text-dark" id="infoTotalSites">-</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="p-3 bg-primary bg-opacity-10 rounded border border-primary-subtle h-100 shadow-sm">
+                                    <div class="text-primary small fw-bold mb-1">LAYANAN UTAMA</div>
+                                    <div class="fs-5 fw-bold text-primary" id="infoTopService">-</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="p-3 bg-danger bg-opacity-10 rounded border border-danger-subtle h-100 shadow-sm">
+                                    <div class="text-danger small fw-bold mb-1">TOTAL BIAYA BULANAN</div>
+                                    <div class="fs-5 fw-bold text-danger" id="infoTotalExpense">-</div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+
+                    <div id="modeEditPartner" class="d-none">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">NAMA PARTNER</label>
+                                <input type="text" class="form-control shadow-none" id="editPartnerName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">ACCOUNT MANAGER</label>
+                                <input type="text" class="form-control shadow-none" id="editPartnerAM">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">EMAIL</label>
+                                <input type="email" class="form-control shadow-none" id="editPartnerEmail">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">NO. TELEPON</label>
+                                <input type="text" class="form-control shadow-none" id="editPartnerPhone">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted small fw-bold">ALAMAT KANTOR</label>
+                                <textarea class="form-control shadow-none" id="editPartnerAddress" rows="2"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end mt-4 gap-2 pt-3 border-top">
+                            <button type="button" id="btnBatalEdit" class="btn btn-secondary px-4" onclick="toggleEditPartner(false)">Batal</button>
+                            <button type="button" id="btnSimpanEdit" class="btn btn-primary px-4 fw-bold" onclick="simpanEditPartner()">Simpan Perubahan</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div id="contentCircuits" style="display: none;">
+                <div class="ui-table-container">
+                    <div class="d-flex justify-content-between align-items-center px-4 pt-4 pb-3 border-bottom">
+                        <div class="search-box">
+                            <i class="bi bi-search"></i>
+                            <input type="text" id="searchCircuitInput" placeholder="Cari Nama, Lokasi, atau Service ID..." oninput="applyCircuitSearch()">
+                        </div>
+                        <div id="circuitPaginationInfo" class="badge text-secondary border px-3 py-2 rounded-pill fw-bold shadow-sm" style="font-size: 12px; letter-spacing: 0.5px;">
+                            Menyiapkan data...
+                        </div>
+                    </div>
+
+                    <div class="ui-table-header">
+                        <div style="flex: 2;">NAMA & LOKASI PELANGGAN</div>
+                        <div style="flex: 1;">SERVICE ID</div>
+                        <div style="flex: 1;">PARTNER SERVICE</div>
+                        <div style="flex: 1;">SERVICE CATEGORY</div>
+                        <div style="flex: 1;">CIRCUIT ID</div>
+                        <div style="flex: 1;">HRG BULANAN</div>
+                        <div style="flex: 0.5;">STATUS</div>
+                        <div style="width: 70px; text-align: right;">DETAIL</div>
+                    </div>
+                    <div id="partnerCircuitBody">
+                        <div class="text-center p-4 text-muted">Memuat data...</div>
+                    </div>
+
+                    <div class="d-flex justify-content-end px-4 py-3 border-top rounded-bottom">
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm border rounded-pill px-4 fw-bold text-muted shadow-sm d-flex align-items-center" id="btnPrevCircuit" onclick="changeCircuitPage(-1)">
+                                <i class="bi bi-chevron-left me-2" style="font-size: 12px;"></i> Prev
+                            </button>
+                            <button class="btn btn-sm border rounded-pill px-4 fw-bold text-primary shadow-sm d-flex align-items-center" id="btnNextCircuit" onclick="changeCircuitPage(1)">
+                                Next <i class="bi bi-chevron-right ms-2" style="font-size: 12px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
