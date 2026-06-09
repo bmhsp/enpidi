@@ -286,3 +286,21 @@ body {
 .ts-dropdown { background-color: var(--card-dark) !important; border: 1px solid var(--border-dark) !important; color: var(--text-main) !important; border-radius: 8px; }
 .ts-dropdown .option { color: var(--text-muted); }
 .ts-dropdown .option.active, .ts-dropdown .option:hover { background-color: var(--hover-dark) !important; color: var(--accent-blue) !important; }
+
+
+/* ========================================= */
+/* EFEK DATA EXISTING (HALAMAN UPDATE)       */
+/* ========================================= */
+.data-existing {
+    color: #6c757d !important; /* Warna teks abu-abu pudar */
+    background-color: rgba(255, 255, 255, 0.02) !important; /* Background transparan */
+    border: 1px dashed #495057 !important; /* Garis putus-putus */
+    transition: all 0.3s ease-in-out;
+}
+
+/* Pas user ngeklik (fokus) ke kolomnya, dia langsung terang */
+.data-existing:focus {
+    color: #f8f9fa !important; /* Teks jadi putih terang lagi */
+    background-color: transparent !important;
+    border: 1px solid #0d6efd !important; /* Garis nyala biru ala Bootstrap */
+}

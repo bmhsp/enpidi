@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tom-select/2.2.2/css/tom-select.bootstrap5.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="app-container">
@@ -49,40 +50,97 @@
                     <hr class="border-dark mb-4">
 
                     <!-- FORM UPDATE BARU -->
-                    <h6 class="text-white fw-bold mb-4" style="letter-spacing: 1px;"><i class="bi bi-tools text-primary me-2"></i>DETAIL UPDATE BARU</h6>
-                    <div class="row mb-5">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label small fw-bold">JENIS PROJECT / UPDATE</label>
-                            <select class="form-select" id="inpUpdProject" required onchange="cekStatusTerminate()">
+                    <h6 class="text-white fw-bold mb-4 mt-4" style="letter-spacing: 1px;"><i class="bi bi-tools text-primary me-2"></i>DETAIL UPDATE BARU</h6>
+                    
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-warning">JENIS PROJECT *</label>
+                            <select class="form-select border-warning text-dark fw-bold" id="inpUpdProject" required onchange="cekStatusTerminate()">
                                 <option value="">-- Pilih Jenis Update --</option>
-                                <option value="Upgrade">📈 Upgrade Kapasitas</option>
-                                <option value="Downgrade">📉 Downgrade Kapasitas</option>
-                                <option value="Relokasi">🚚 Relokasi Site</option>
-                                <option value="Perpanjangan">📝 Perpanjangan Kontrak</option>
-                                <option value="Terminate">🛑 Terminate (Pemutusan)</option>
+                                <option value="Upgrade">Upgrade Kapasitas</option>
+                                <option value="Downgrade">Downgrade Kapasitas</option>
+                                <option value="Relocation">Relokasi Site</option>
+                                <option value="Migration">Migrasi Partner</option>
+                                <option value="Terminate">Terminate (Pemutusan)</option>
                             </select>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label small fw-bold">TANGGAL UPDATE BERLAKU</label>
-                            <input type="date" class="form-control" id="inpUpdTanggal" required>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold text-warning">TANGGAL EKSEKUSI *</label>
+                            <input type="date" class="form-control border-warning" id="inpUpdTanggal" required>
                         </div>
-                        
-                        <div class="col-md-12 mb-3">
-                            <label class="form-label small fw-bold">DETAIL WORK ORDER (WO) BARU</label>
-                            <textarea class="form-control" id="inpUpdWO" rows="2" placeholder="Contoh: Upgrade kapasitas dari 100 Mbps menjadi 200 Mbps..." required></textarea>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label small fw-bold">BIAYA BULANAN BARU (MRC)</label>
-                            <input type="number" class="form-control" id="inpUpdBiaya" placeholder="Masukkan biaya baru jika berubah">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label small fw-bold">STATUS LINK</label>
-                            <select class="form-select" id="inpUpdStatus" required>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold text-warning">STATUS LINK *</label>
+                            <select class="form-select border-warning" id="inpUpdStatus" required>
                                 <option value="Online">🟢 Online</option>
                                 <option value="Terminated">🔴 Terminated</option>
                                 <option value="Isolir">🟡 Isolir</option>
                             </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-warning">DETAIL WORK ORDER (WO) *</label>
+                            <textarea class="form-control border-warning" id="inpUpdWO" rows="2" placeholder="Catat detail pekerjaan yang dilakukan... (Wajib diisi)" required></textarea>
+                        </div>
+                    </div>
+
+                    <hr class="border-secondary my-4">
+
+                    <h6 class="text-white fw-bold mb-3"><i class="bi bi-pencil-square text-info me-2"></i>DATA TEKNIS & BIAYA (Bisa Diubah)</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">LOKASI SITE</label>
+                            <input type="text" class="form-control" id="inpUpdSite">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">SERVICE CATEGORY</label>
+                            <input type="text" class="form-control" id="inpUpdCategory">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">SERVICE (BW)</label>
+                            <input type="text" class="form-control" id="inpUpdService">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">PARTNER ISP</label>
+                            <select class="form-select" id="inpUpdPartner"></select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">CIRCUIT ID</label>
+                            <input type="text" class="form-control" id="inpUpdCircuit">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small fw-bold">SALES ORDER</label>
+                            <input type="text" class="form-control" id="inpUpdSO">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small fw-bold">SALES / AM</label>
+                            <input type="text" class="form-control" id="inpUpdSales">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">BIAYA BULANAN (MRC)</label>
+                            <input type="number" class="form-control" id="inpUpdBiaya">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">BIAYA INSTALASI (OTC)</label>
+                            <input type="number" class="form-control" id="inpUpdInstCost">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">BIAYA IKG</label>
+                            <input type="number" class="form-control" id="inpUpdIkgCost">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">PERIODE KONTRAK (THN)</label>
+                            <input type="number" class="form-control" id="inpUpdPeriode">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">MULAI KONTRAK</label>
+                            <input type="date" class="form-control" id="inpUpdContractStart">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">CATATAN LAIN</label>
+                            <textarea class="form-control" id="inpUpdNotes" rows="1"></textarea>
                         </div>
                     </div>
 
@@ -98,5 +156,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tom-select/2.2.2/js/tom-select.complete.min.js"></script>
 </body>
 </html>

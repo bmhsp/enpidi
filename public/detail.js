@@ -226,6 +226,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Error saat load data:', err);
         alert('Gagal memuat halaman detail.');
     }
+
+    // DIREKTORI - UPDATE DI HALAMAN DETAIL (HAPUS BLOK INI)
+    const btnUpdateProject = document.getElementById('btnUpdateProject');
+    if (btnUpdateProject) {
+        btnUpdateProject.addEventListener('click', () => {
+            // Kita ambil ID dari URL saat ini (misal: detail.html?id=25)
+            const urlParams = new URLSearchParams(window.location.search);
+            const linkId = urlParams.get('id');
+            
+            if (linkId) {
+                // Pindah ke halaman update bawa ID-nya
+                window.location.href = `update_project.html?id=${linkId}`;
+            } else {
+                alert("Waduh, ID Project gak ketemu bos!");
+            }
+        });
+    }
 });
 
 
@@ -497,3 +514,20 @@ window.toggleTombolLaci = function(btn) {
         }
     }, 50); 
 };
+
+
+// =========================================================
+// [DETAIL] FUNGSI PINDAH KE HALAMAN UPDATE PROJECT
+// =========================================================
+function pindahKeUpdate() {
+    // Kita gak usah pusing nyari di URL.
+    // Kita ambil aja ID (Primary Key) dari data history terbaru yang udah ke-load di layar!
+    if (window.historyDataList && window.historyDataList.length > 0) {
+        const currentId = window.historyDataList[0].id;
+        
+        // Langsung bawa ngacir ke halaman sebelah bawa ID-nya
+        window.location.href = `update_project.html?id=${currentId}`;
+    } else {
+        alert("Waduh, Data Project belum selesai dimuat bos! Tunggu bentar.");
+    }
+}

@@ -75,6 +75,11 @@ document.addEventListener('DOMContentLoaded', () => {
         setupFormTambahData();
     }
 
+    // DIREKTORI - UPDATE PROJECT
+    if (document.getElementById('formUpdateProject')) {
+        setupHalamanUpdate();
+    }
+
     // PARTNER - List Partner, Search & Sort, Form Tambah Partner
     if (document.getElementById('partnerListBody')) {
         console.log("✅ [CCTV] Masuk Halaman Partner List");
@@ -571,7 +576,7 @@ if (document.getElementById('inpProvCustomer')) {
 
 
 // ================================================================
-// [DIREKTORI] FUNGSI HALAMAN DIREKTORI ===========================
+// === [DIREKTORI] FUNGSI HALAMAN DIREKTORI =======================
 // ================================================================
 async function loadDirektori() {
     const listBody = document.getElementById('siteListBody');
@@ -859,6 +864,183 @@ async function simpanDirektoriBaru(event) {
         }
     }
 }
+
+
+// =========================================================================
+// [ DIREKTORI ] UPDATE PROJECT FUNGSI HALAMAN UPDATE PROJECT
+// =========================================================================
+async function setupHalamanUpdate() {
+    // 1. Tangkap ID dari URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const linkId = urlParams.get('id');
+
+    if (!linkId) {
+        alert("ID Link tidak ditemukan!");
+        window.location.href = 'direktori.html';
+        return;
+    }
+
+    // Tombol Back langsung pakai history biar aman
+    const btnBack = document.getElementById('btnBackToDetail');
+    if (btnBack) {
+        btnBack.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.history.back(); // Otomatis balik ke halaman detail sebelumnya
+        });
+    }
+
+    // 2. Ambil data lama & Load Dropdown Partner
+    try {
+        const [resLink, resPartner] = await Promise.all([
+            fetch(`http://localhost:3000/api/service-links/id/${linkId}`),
+            fetch('http://localhost:3000/api/partners')
+        ]);
+
+        if (!resLink.ok) throw new Error("Gagal ambil data link dari server");
+        
+        if (resPartner.ok) {
+            const partners = await resPartner.json();
+            let optHtml = '<option value="">-- Pilih Partner --</option>';
+            partners.forEach(p => { optHtml += `<option value="${p.partner_id}">${p.partner_name}</option>`; });
+            document.getElementById('inpUpdPartner').innerHTML = optHtml;
+        }
+
+        const data = await resLink.json();
+
+        // Header Read Only
+        document.getElementById('readCustomerName').textContent = `${data.customer_name || '-'} - ${data.customer_site || '-'}`;
+        document.getElementById('readServiceId').textContent = `${data.service_id || '-'} (${data.partner_name || '-'})`;
+        
+        // Isi Default Form Komplit
+        document.getElementById('inpUpdStatus').value = data.status_link || 'Online';
+        document.getElementById('inpUpdTanggal').value = new Date().toISOString().split('T')[0];
+        document.getElementById('inpUpdSite').value = data.customer_site || '';
+        document.getElementById('inpUpdCategory').value = data.service_category || '';
+        document.getElementById('inpUpdService').value = data.service || '';
+        document.getElementById('inpUpdPartner').value = data.partner_id || '';
+        document.getElementById('inpUpdCircuit').value = data.circuit_id || '';
+        document.getElementById('inpUpdSO').value = data.sales_order || '';
+        document.getElementById('inpUpdSales').value = data.sales || '';
+        document.getElementById('inpUpdBiaya').value = data.monthly_cost || 0; 
+        document.getElementById('inpUpdInstCost').value = data.installation_cost || 0; 
+        document.getElementById('inpUpdIkgCost').value = data.ikg_cost || 0; 
+        document.getElementById('inpUpdPeriode').value = data.contract_periode || 1; 
+        
+        if(data.contract_start) {
+            document.getElementById('inpUpdContractStart').value = data.contract_start.split('T')[0];
+        }
+        document.getElementById('inpUpdNotes').value = data.notes || '';
+
+        // SULAP DROPDOWN PARTNER BIAR BISA DIKETIK
+        const elPartner = document.getElementById('inpUpdPartner');
+        if (elPartner) {
+            new TomSelect(elPartner, {
+                create: false,
+                sortField: {
+                    field: "text",
+                    direction: "asc"
+                },
+                placeholder: "-- Ketik atau Pilih Partner --"
+            });
+        }
+
+        // Daftar ID kolom yang mau dibikin pudar (kecuali Project, Tanggal, Status, WO karena itu wajib baru)
+        const kolomExisting = [
+            'inpUpdSite', 'inpUpdCategory', 'inpUpdService', 
+            'inpUpdCircuit', 'inpUpdSO', 'inpUpdSales', 'inpUpdBiaya',
+            'inpUpdInstCost', 'inpUpdIkgCost', 'inpUpdPeriode', 'inpUpdContractStart', 'inpUpdNotes'
+        ];
+
+        kolomExisting.forEach(id => {
+            const el = document.getElementById(id);
+            // Kalau elemennya ada dan isinya gak kosong, kasih efek pudar
+            if (el && el.value !== '') {
+                el.classList.add('data-existing');
+
+                // Pas user ngetik / milih opsi baru, efek pudarnya langsung dihapus permanen
+                el.addEventListener('input', function() {
+                    this.classList.remove('data-existing');
+                });
+            }
+        });
+
+    } catch (err) {
+        console.error(err);
+        alert("Gagal memuat data dari server!");
+    }
+
+    // 3. Setup form submit
+    const formUpdate = document.getElementById('formUpdateProject');
+    if (formUpdate) {
+        formUpdate.addEventListener('submit', async (e) => {
+            e.preventDefault(); 
+            const btnSubmit = formUpdate.querySelector('button[type="submit"]');
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = 'Memproses...';
+
+            // Bungkus FULL DATA
+            const bodyData = {
+                project: document.getElementById('inpUpdProject').value,
+                created_at: document.getElementById('inpUpdTanggal').value,
+                status_link: document.getElementById('inpUpdStatus').value,
+                detail_wo: document.getElementById('inpUpdWO').value,
+                
+                customer_site: document.getElementById('inpUpdSite').value, 
+                service_category: document.getElementById('inpUpdCategory').value,
+                service: document.getElementById('inpUpdService').value,
+                partner_id: document.getElementById('inpUpdPartner').value,   
+                circuit_id: document.getElementById('inpUpdCircuit').value,
+                sales_order: document.getElementById('inpUpdSO').value,
+                sales: document.getElementById('inpUpdSales').value,
+                
+                monthly_cost: document.getElementById('inpUpdBiaya').value || 0,
+                installation_cost: document.getElementById('inpUpdInstCost').value || 0,
+                ikg_cost: document.getElementById('inpUpdIkgCost').value || 0,
+                contract_periode: document.getElementById('inpUpdPeriode').value || 1,
+                contract_start: document.getElementById('inpUpdContractStart').value || null,
+                notes: document.getElementById('inpUpdNotes').value
+            };
+
+            try {
+                const resUpdate = await fetch(`http://localhost:3000/api/service-links/${linkId}/lifecycle`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bodyData)
+                });
+
+                if (resUpdate.ok) {
+                    // 🔥 1. Ekstrak bekal dari server
+                    const resData = await resUpdate.json(); 
+                    
+                    alert("Mantap! Project berhasil di-update dan masuk ke History! 😎");
+                    
+                    // 🔥 2. Pulang bawa bekal service_id (Anti-undefined club!)
+                    window.location.href = `detail.html?srv=${resData.service_id}`;
+                } else {
+                    const errData = await resUpdate.json();
+                    alert("Gagal update project: " + (errData.error || "Server error"));
+                }
+            } catch (error) {
+                console.error("Crash Update:", error);
+                alert("Koneksi ke server putus bos!");
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = 'Simpan Update';
+            }
+        });
+    }
+}
+
+// Fungsi otomatis: Kalau di dropdown pilih "Terminate", status link otomatis berubah jadi "Terminated"
+window.cekStatusTerminate = function() {
+    const jenis = document.getElementById('inpUpdProject').value;
+    const statusSelect = document.getElementById('inpUpdStatus');
+    if (jenis === 'Terminate') {
+        statusSelect.value = 'Terminated';
+    } else {
+        statusSelect.value = 'Online'; // Default selain terminate
+    }
+};
 
 
 // ===========================================================================

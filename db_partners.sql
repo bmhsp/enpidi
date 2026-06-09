@@ -8,7 +8,7 @@ DROP TYPE IF EXISTS project_type CASCADE;
 DROP TYPE IF EXISTS service_type CASCADE;
 
 -- 2. Buat List ENUM
-CREATE TYPE project_type AS ENUM ('Activation', 'Upgrade', 'Downgrade', 'Relocation', 'Terminate', 'BOD');
+CREATE TYPE project_type AS ENUM ('Activation', 'Upgrade', 'Downgrade', 'Relocation', 'Terminate', 'BOD', 'Migration');
 CREATE TYPE service_type AS ENUM ('Metro', 'Dedicated', 'Broadband', 'Wireless', 'VPN IP', 'Backbone');
 
 -- 3. TABEL 1: MASTER CUSTOMER

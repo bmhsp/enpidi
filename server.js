@@ -521,6 +521,96 @@ app.put('/api/service-links/:id', async (req, res) => {
 });
 
 
+// =========================================================================
+// API DIREKTORI - TAMBAH HISTORY LIFECYCLE (Upgrade/Downgrade/Terminate/Full Update)
+// =========================================================================
+app.post('/api/service-links/:id/lifecycle', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        // Tangkap SEMUA lemparan dari Frontend
+        const { 
+            project, created_at, detail_wo, monthly_cost, status_link, 
+            customer_site, partner_id, service, service_category,
+            sales_order, sales, circuit_id, installation_cost, ikg_cost,
+            contract_periode, contract_start, notes
+        } = req.body;
+
+        // Cuma butuh narik ID Customer & Service ID lama (karena ini gak boleh diubah)
+        const oldData = await pool.query('SELECT customer_id, service_id FROM link_detail WHERE id = $1', [id]);
+        if (oldData.rows.length === 0) return res.status(404).json({ error: 'Data lama tidak ditemukan' });
+        const d = oldData.rows[0];
+
+        const query = `
+            INSERT INTO link_detail (
+                created_at, customer_id, customer_site, service_id, partner_id, circuit_id,
+                project, sales_order, service, service_category, detail_wo, sales,
+                status_link, monthly_cost, installation_cost, ikg_cost, 
+                contract_periode, contract_start, notes
+            ) VALUES (
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19
+            ) RETURNING id
+        `;
+        
+        // Susun rapi sesuai urutan VALUES
+        const values = [
+            created_at,             
+            d.customer_id,          // Tetap pakai lama
+            customer_site,          
+            d.service_id,           // Tetap pakai lama
+            partner_id,             
+            circuit_id,           
+            project,                
+            sales_order,          
+            service,              
+            service_category,     
+            detail_wo,              
+            sales,                
+            status_link,            
+            monthly_cost,           
+            installation_cost,    
+            ikg_cost,             
+            contract_periode,     
+            contract_start,       
+            notes                 
+        ];
+
+        await pool.query(query, values);
+        res.json({ 
+            message: 'Lifecycle project berhasil ditambahkan ke riwayat!',
+            service_id: d.service_id 
+        });
+    } catch (err) {
+        console.error('Error insert lifecycle:', err);
+        res.status(500).json({ error: 'Gagal menambah riwayat project' });
+    }
+});
+
+
+// =========================================================================
+// API DIREKTORI - AMBIL 1 DATA LINK BERDASARKAN ID (PRIMARY KEY)
+// =========================================================================
+app.get('/api/service-links/id/:id', async (req, res) => {
+    try {
+        const query = `
+            SELECT l.*, c.customer_name, p.partner_name 
+            FROM link_detail l
+            LEFT JOIN master_customers c ON l.customer_id = c.customer_id
+            LEFT JOIN master_partners p ON l.partner_id = p.partner_id
+            WHERE l.id = $1
+        `;
+        const result = await pool.query(query, [req.params.id]);
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Data tidak ditemukan' });
+        }
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error('Error tarik data link:', err);
+        res.status(500).json({ error: 'Gagal tarik data link' });
+    }
+});
+
 
 // =========================================================================
 // ============ API PARTNERS - LIST SEMUA PARTNER ==========================
