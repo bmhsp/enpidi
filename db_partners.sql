@@ -32,15 +32,15 @@ CREATE TABLE link_detail (
     id SERIAL PRIMARY KEY,
     created_at DATE,
     customer_id INT REFERENCES master_customers(customer_id),
-    customer_site VARCHAR(255),
-    service_id VARCHAR(100), 
+    customer_site TEXT,
+    service_id VARCHAR(255), 
     partner_id INT REFERENCES master_partners(partner_id),
-    circuit_id VARCHAR(100),
+    circuit_id VARCHAR(255),
     project project_type,
     sales_order VARCHAR(255),
     service VARCHAR(255),
     service_category service_type,
-    detail_wo VARCHAR(255),
+    detail_wo TEXT,
     sales VARCHAR(255),
     status_link VARCHAR(255),
     monthly_cost NUMERIC DEFAULT 0,
@@ -48,7 +48,7 @@ CREATE TABLE link_detail (
     ikg_cost NUMERIC DEFAULT 0,
     contract_periode NUMERIC DEFAULT 1,
     contract_start DATE,
-    notes VARCHAR(255)
+    notes TEXT
 );
 
 
@@ -63,7 +63,7 @@ CREATE TABLE provisioning_tasks (
     project project_type,
     service VARCHAR(255),
     service_category service_type,
-    detail_wo VARCHAR(255),
+    detail_wo TEXT,
     sales VARCHAR(255),
     monthly_cost NUMERIC DEFAULT 0,
     sales_order VARCHAR(255),
@@ -71,7 +71,7 @@ CREATE TABLE provisioning_tasks (
     ikg_cost NUMERIC DEFAULT 0,
     contract_periode NUMERIC DEFAULT 1,
     contract_start DATE,
-    notes VARCHAR(255),
-    progres_lapangan VARCHAR(255) DEFAULT 'On Progress',
+    notes TEXT,
+    progres_lapangan TEXT DEFAULT 'On Progress',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

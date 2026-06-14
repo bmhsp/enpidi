@@ -92,6 +92,14 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("✅ [CCTV] Masuk Halaman Partner Detail");
         if (typeof loadPartnerDetail === 'function') loadPartnerDetail();
     }
+
+    // EXPORT EXCEL
+    const btnExport = document.getElementById('btnExportExcel');
+    if (btnExport) {
+        btnExport.addEventListener('click', exportDirektoriKeExcel);
+    }
+
+    setupFiturImport();
 });
 
 // ======================================
@@ -679,7 +687,7 @@ function renderDirektori() {
         const item = `
             <div class="ui-row px-4 py-3 d-flex align-items-center">
                 <div style="width: 48px; font-size:13px;" class="text-muted fw-bold">${globalIndex + 1}</div>
-                <div style="flex: 2; padding-right: 15px; min-width: 0;">
+                <div style="flex: 3; padding-right: 15px; min-width: 0;">
                     <div class="text-main text-truncate fw-bold text-dark" style="cursor: pointer;" onclick="window.location.href='detail.html?srv=${site.service_id}'">${site.customer_name || '-'}</div>
                     <div class="text-sub text-truncate text-muted small">${site.customer_site || '-'}</div>
                 </div>
@@ -690,9 +698,6 @@ function renderDirektori() {
                 <div style="flex: 1.5; padding-right: 15px; min-width: 0;">
                     <div class="text-main text-truncate fw-bold text-dark">${site.partner_name || '-'}</div>
                     <div class="text-sub text-truncate text-muted small">${site.circuit_id || '-'}</div>
-                </div>
-                <div style="flex: 1; padding-right: 15px;" class="text-dark fw-semibold small">
-                    ${site.created_at ? formatTanggal(site.created_at) : '-'}
                 </div>
                 <div style="flex: 0.7; padding-right: 15px;">
                     <span class="badge ${badgeClass} px-3 py-1 rounded-pill shadow-sm" style="font-size: 11px; letter-spacing: 0.5px;">${statusText}</span>
@@ -721,36 +726,49 @@ function renderDirektori() {
 // [DIREKTORI] FUNGSI TAMBAH DATA LINK BARU (FULL PAGE)
 // =========================================================================
 async function setupFormTambahData() {
-    // 1. Tarik Data Customer
+    // 1. CARI ELEMENNYA DULU
+    // 🔥 PENTING: Pastikan ID ini SAMA PERSIS dengan ID <select> di HTML lu!
+    const elCust = document.getElementById('inpDirCustomer'); 
+    const elPart = document.getElementById('inpDirPartner');  
+
+    // 🔥 SAKLAR PENGAMAN: Kalau elemennya nggak ada (misal lagi di halaman lain), stop di sini!
+    if (!elCust || !elPart) return; 
+
+    // 2. Tarik Data Customer
     try {
         const resCust = await fetch('http://localhost:3000/api/customers');
-        globalCustomers = await resCust.json(); 
+        let globalCustomers = await resCust.json(); 
         
         let custHtml = '<option value=""></option>';
         globalCustomers.forEach(c => { 
             custHtml += `<option value="${c.customer_name}">${c.customer_name}</option>`; 
         });
-        $('#inpDirCustomer').html(custHtml); 
+        elCust.innerHTML = custHtml; 
     } catch (e) { console.error("Gagal load customer", e); }
 
-    // 2. Tarik Data Partner
+    // 3. Tarik Data Partner
     try {
         const resPart = await fetch('http://localhost:3000/api/partners');
-        globalPartners = await resPart.json(); 
+        let globalPartners = await resPart.json(); 
         
         let partHtml = '<option value=""></option>';
         globalPartners.forEach(p => { 
             partHtml += `<option value="${p.partner_name}">${p.partner_name}</option>`; 
         });
-        $('#inpDirPartner').html(partHtml);
+        elPart.innerHTML = partHtml;
     } catch (e) { console.error("Gagal load partner", e); }
 
-    // 3. JALANKAN MESIN SELECT2 (TEMBAK LANGSUNG KE ID BIAR PASTI KENA)
-    $('#inpDirCustomer, #inpDirPartner').select2({
-        theme: 'bootstrap-5',
-        width: '100%',
-        placeholder: '-- Ketik atau Pilih --',
-        tags: true // 🔥 SIHIR BIAR BISA NGETIK NAMA BARU
+    // 4. JALANKAN MESIN TOM SELECT
+    new TomSelect(elCust, {
+        create: true, // Bisa ngetik nama baru
+        sortField: { field: "text", direction: "asc" },
+        placeholder: '-- Ketik atau Pilih Customer --'
+    });
+
+    new TomSelect(elPart, {
+        create: true, // Bisa ngetik nama baru
+        sortField: { field: "text", direction: "asc" },
+        placeholder: '-- Ketik atau Pilih Partner --'
     });
 }
 
@@ -1481,4 +1499,146 @@ function renderCircuitTable() {
     // Kunci tombol kalo udah mentok
     document.getElementById('btnPrevCircuit').disabled = (window.currentCircuitPage === 1);
     document.getElementById('btnNextCircuit').disabled = (window.currentCircuitPage === totalPages);
+}
+
+
+
+// =========================================================================
+// FITUR EXPORT TO EXCEL (DIREKTORI)
+// =========================================================================
+async function exportDirektoriKeExcel() {
+    try {
+        // Ganti teks tombol biar keliatan lagi mikir
+        const btn = document.getElementById('btnExportExcel');
+        const teksAsli = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Loading...';
+        btn.disabled = true;
+
+        // 1. Tarik semua data dari API Direktori lu
+        const res = await fetch('http://localhost:3000/api/direktori');
+        if (!res.ok) throw new Error("Gagal ambil data dari server");
+        const data = await res.json();
+
+        // 2. Rapihin datanya sebelum dimasukin ke Excel (Pilih kolom yang penting aja)
+        const dataBersih = data.map((d, index) => ({
+            "No": index + 1,
+            "Customer": d.customer_name || '-',
+            "Lokasi Site": d.customer_site || '-',
+            "Service ID": d.service_id || '-',
+            "Partner ISP": d.partner_name || '-',
+            "Circuit ID": d.circuit_id || '-',
+            "Kategori": d.service_category || '-',
+            "Layanan (BW)": d.service || '-',
+            "Biaya Bulanan (MRC)": Number(d.monthly_cost) || 0,
+            "Biaya Instalasi (OTC)": Number(d.installation_cost) || 0,
+            "Sales / AM": d.sales || '-',
+            "Status Link": d.status_link || '-',
+            "Update Terakhir": d.created_at ? d.created_at.split('T')[0] : '-'
+        }));
+
+        // 3. Proses bikin file Excel pakai SheetJS
+        const worksheet = XLSX.utils.json_to_sheet(dataBersih);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Data Link");
+
+        // 4. Download Filenya! (Format penamaan: Direktori_Link_Tanggal)
+        const tanggalHariIni = new Date().toISOString().split('T')[0];
+        XLSX.writeFile(workbook, `Direktori_Link_${tanggalHariIni}.xlsx`);
+
+        // Balikin tombol ke semula
+        btn.innerHTML = teksAsli;
+        btn.disabled = false;
+
+    } catch (err) {
+        console.error("Error Export:", err);
+        alert("Gagal mengekspor data ke Excel!");
+        
+        const btn = document.getElementById('btnExportExcel');
+        btn.innerHTML = '<i class="bi bi-file-earmark-excel me-1"></i> Export Excel';
+        btn.disabled = false;
+    }
+}
+
+
+// =========================================================================
+// FITUR IMPORT EXCEL KE DATABASE (VERSI BAWEL BUAT DEBUGGING)
+// =========================================================================
+function setupFiturImport() {
+    console.log("🔎 [TRACKING] Fungsi setupFiturImport mulai dijalankan...");
+
+    const btnTrigger = document.getElementById('btnTriggerImport');
+    const inpFile = document.getElementById('inpImportExcel');
+
+    // Cek apakah tombolnya beneran ketemu di HTML
+    if (!btnTrigger) {
+        console.error("🚨 FATAL: Elemen dengan ID 'btnTriggerImport' TIDAK DITEMUKAN di HTML!");
+        return;
+    }
+    if (!inpFile) {
+        console.error("🚨 FATAL: Elemen dengan ID 'inpImportExcel' TIDAK DITEMUKAN di HTML!");
+        return;
+    }
+
+    console.log("✅ [TRACKING] Tombol dan Input File berhasil ditemukan! Memasang sensor klik...");
+
+    // Pas tombol diklik
+    btnTrigger.addEventListener('click', (e) => {
+        e.preventDefault(); // Mencegah tombol ngereload halaman kalau dia ada di dalam <form>
+        console.log("🖱️ [TRACKING] Tombol Import diklik! Membuka File Explorer...");
+        inpFile.click();
+    });
+
+    // Pas file Excel udah dipilih
+    inpFile.addEventListener('change', async function(e) {
+        const file = e.target.files[0];
+        if (!file) {
+            console.log("⚠️ [TRACKING] Batal milih file.");
+            return;
+        }
+
+        console.log(`📄 [TRACKING] File dipilih: ${file.name} | Ukuran: ${file.size} bytes`);
+
+        // Ubah teks tombol
+        const teksAsli = btnTrigger.innerHTML;
+        btnTrigger.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Menyedot Data...';
+        btnTrigger.disabled = true;
+
+        const reader = new FileReader();
+        reader.onload = async function(event) {
+            try {
+                console.log("⚙️ [TRACKING] Sedang membaca isi Excel pakai SheetJS...");
+                const data = new Uint8Array(event.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+                console.log(`🚀 [TRACKING] Berhasil ekstrak ${jsonData.length} baris! Mengirim ke server...`);
+
+                const res = await fetch('http://localhost:3000/api/service-links/import', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(jsonData)
+                });
+
+                const hasil = await res.json();
+
+                if (res.ok) {
+                    alert(`Gila bos! ${hasil.berhasil} baris data berhasil mendarat di database! 😎🚀`);
+                    window.location.reload();
+                } else {
+                    alert("Waduh, gagal import bos: " + hasil.error);
+                }
+            } catch (err) {
+                console.error("💥 [TRACKING] Crash saat proses Import:", err);
+                alert("File Excel rusak atau formatnya nggak sesuai!");
+            } finally {
+                btnTrigger.innerHTML = teksAsli;
+                btnTrigger.disabled = false;
+                inpFile.value = ''; 
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    });
 }

@@ -6,7 +6,8 @@ const app = express();
 const port = 3000;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static('public'));
 
 const pool = new Pool({
@@ -608,6 +609,81 @@ app.get('/api/service-links/id/:id', async (req, res) => {
     } catch (err) {
         console.error('Error tarik data link:', err);
         res.status(500).json({ error: 'Gagal tarik data link' });
+    }
+});
+
+
+// =========================================================================
+// API DIREKTORI - IMPORT MASSAL DARI EXCEL
+// =========================================================================
+app.post('/api/service-links/import', async (req, res) => {
+    try {
+        const dataExcel = req.body;
+        let sukses = 0;
+
+        for (const row of dataExcel) {
+            const customerName = row['Customer'];
+            const partnerName = row['Partner ISP'];
+            if (!customerName) continue;
+
+            // 1. CARI/Bikin ID Customer
+            let resCust = await pool.query('SELECT customer_id FROM master_customers WHERE customer_name = $1', [customerName]);
+            let custId;
+            if (resCust.rows.length > 0) {
+                custId = resCust.rows[0].customer_id;
+            } else {
+                let newCust = await pool.query('INSERT INTO master_customers (customer_name) VALUES ($1) RETURNING customer_id', [customerName]);
+                custId = newCust.rows[0].customer_id;
+            }
+
+            // 2. CARI/Bikin ID Partner (SEKARANG UDAH PINTER!)
+            let partId = null;
+            if (partnerName && partnerName !== '-') {
+                let resPart = await pool.query('SELECT partner_id FROM master_partners WHERE partner_name = $1', [partnerName]);
+                if (resPart.rows.length > 0) {
+                    partId = resPart.rows[0].partner_id; // Kalau ada, pake ID lama
+                } else {
+                    // Kalau nggak ketemu, BIKIN BARU bos!
+                    let newPart = await pool.query('INSERT INTO master_partners (partner_name) VALUES ($1) RETURNING partner_id', [partnerName]);
+                    partId = newPart.rows[0].partner_id;
+                }
+            }
+
+            // 3. INSERT KE LINK_DETAIL (SEKARANG SUPER LENGKAP!)
+            await pool.query(`
+                INSERT INTO link_detail (
+                    created_at, customer_id, customer_site, service_id, 
+                    partner_id, circuit_id, project, service, 
+                    service_category, sales, status_link, monthly_cost, installation_cost,
+                    sales_order, detail_wo, notes  -- 🔥 3 KOLOM BARU DITAMBAHKAN
+                ) VALUES (
+                    CURRENT_DATE, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12,
+                    $13, $14, $15 
+                )
+            `, [
+                custId, 
+                row['Lokasi Site'], 
+                row['Service ID'], 
+                partId, 
+                row['Circuit ID'], 
+                row['Kategori'],            // $6 
+                row['Layanan (BW)'],        // $7
+                row['Service Category'],    // $8 
+                row['Sales / AM'],          // $9
+                row['Status Link'],         // $10 
+                Number(row['Biaya Bulanan (MRC)']),   // $11
+                Number(row['Biaya Instalasi (OTC)']), // $12
+                row['Sales Order'],         // $13 
+                row['Detail WO'],           // $14 
+                row['Notes']                // $15 
+            ]);
+
+            sukses++;
+        }
+        res.json({ message: 'Import sukses!', berhasil: sukses });
+    } catch (err) {
+        console.error('💥 ERROR IMPORT:', err);
+        res.status(500).json({ error: err.message });
     }
 });
 
